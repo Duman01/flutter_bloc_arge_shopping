@@ -38,59 +38,15 @@ class _basketState extends State<basket> {
                     shrinkWrap: true,
                     itemCount: state.productList.length,
                     itemBuilder: (context, index){
-                      return Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Card(
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      width: 50,
-                                      height: 50,
-                                      child: Image.network(state.productList[index].thumbnailUrl),
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left:5.0),
-                                        child: Column(
-                                          children: <Widget>[
-                                            customText(label:"${state.productList[index].title}", fontWeight: FontWeight.bold, maxLines: 2,),
-                                            //customText(label:"${state.productList[index].price} ₺",),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left:8.0),
-                                      child: customText(label:"${state.productList[index].price} ₺", color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete, color: Colors.black38),
-                            onPressed: (){
-                              setState(() {
-                                basketBloc.dispatch(ExtractBasketEvent(product: state.productList[index]));
-                              });
-                              Toast.show("DELETE SUCCESS", context, duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
-                            },
-                          ),
-                        ],
-                      );
+                      return basketItem(state, index, context, basketBloc);
                     },
                   ),
-                  Padding(
+                  Padding( // total price
                     padding: const EdgeInsets.all(8.0),
                     child: customText(label:"Total Price :  $total ₺", color: Theme.of(context).primaryColor, fontSize: 30, fontWeight: FontWeight.bold, alignment: Alignment.center),
                   ),
                   Divider(),
-                  Container(
+                  Container( // payment button
                     margin: EdgeInsets.only(left:50,right:50),
                     child: RaisedButton(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -116,6 +72,50 @@ class _basketState extends State<basket> {
           },
         ),
       ),
+    );
+  }
+
+  // basket items
+  Widget basketItem(AllBasketListState state, int index, BuildContext context, BasketBloc basketBloc) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Card(
+            elevation: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 50,
+                    height: 50,
+                    child: Image.network(state.productList[index].thumbnailUrl),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:5.0),
+                      child: customText(label:"${state.productList[index].title}", fontWeight: FontWeight.bold, maxLines: 2,),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left:8.0),
+                    child: customText(label:"${state.productList[index].price} ₺", color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.black38),
+          onPressed: (){
+            setState(() {
+              basketBloc.dispatch(ExtractBasketEvent(product: state.productList[index]));
+            });
+            Toast.show("DELETE SUCCESS", context, duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+          },
+        ),
+      ],
     );
   }
 }

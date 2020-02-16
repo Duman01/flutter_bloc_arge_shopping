@@ -47,95 +47,99 @@ class _productState extends State<product> {
                 childAspectRatio: 0.75
               ),
               itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Theme.of(context).primaryColorLight,
-                    ),
-                    //padding: EdgeInsets.all(5),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: <Widget>[
-                        GestureDetector( // photo
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => productDetail(product: products.listProduct[index], tag: index, basketBloc:basketBloc)
-                            ));
-                          },
-                          child: ClipRRect( // photo
-                            borderRadius: BorderRadius.circular(5),
-                            child: heroImage(
-                              tag: "$index",
-                              url: products.listProduct[index].thumbnailUrl,
-                            ),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            customText(label:"CATEGORY", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15,),
-                            basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1)).id!=-1 ? 
-                            Column(
-                              children: <Widget>[
-                                Icon(Icons.check_circle_outline, size: 75,),
-                                customText(label:"already in the basket", color: Colors.white,)
-                              ],
-                            ) : Container(),
-                            Align( // price and addtocart
-                              alignment: Alignment.centerRight,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: customText(label:"${products.listProduct[index].price} ₺", fontWeight: FontWeight.bold, fontSize: 20,),
-                                  ),
-                                  Container( // spring button
-                                    margin: EdgeInsets.only(right:10),
-                                    child: SpringButton(
-                                      SpringButtonType.OnlyScale,
-                                      basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1)).id==-1 ? 
-                                      Icon(
-                                        Icons.add_shopping_cart,
-                                      ):
-                                      Icon(Icons.remove_shopping_cart),
-                                      onTap: () {
-                                        var a = basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1));
-                                        if(a.id==-1){
-                                          setState(() {
-                                            basketBloc.dispatch(AddBasketEvent(product: products.listProduct[index]));
-                                          });
-                                          Toast.show("ADD TO BASKET", context, gravity: Toast.CENTER);
-                                        }
-                                        else {
-                                          setState(() {
-                                            basketBloc.dispatch(ExtractBasketEvent(product: products.listProduct[index]));
-                                          });
-                                          Toast.show("EXTRACT TO BASKET", context, gravity: Toast.CENTER);
-                                        }
-                                      },
-                                      useCache : false,
-                                      alignment : Alignment.center,
-                                      scaleCoefficient : 0.1,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return productItem(context, products, index, basketBloc);
               }
             ),
           );
         }
         return null;
       },
+    );
+  }
+
+  Widget productItem(BuildContext context, ProductList products, int index, BasketBloc basketBloc) {
+    return Card(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Theme.of(context).primaryColorLight,
+        ),
+        //padding: EdgeInsets.all(5),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            GestureDetector( // photo
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => productDetail(product: products.listProduct[index], tag: index, basketBloc:basketBloc)
+                ));
+              },
+              child: ClipRRect( // photo
+                borderRadius: BorderRadius.circular(5),
+                child: heroImage(
+                  tag: "$index",
+                  url: products.listProduct[index].thumbnailUrl,
+                ),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                customText(label:"CATEGORY", fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15,),
+                basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1)).id!=-1 ? 
+                Column(
+                  children: <Widget>[
+                    Icon(Icons.check_circle_outline, size: 75,),
+                    customText(label:"already in the basket", color: Colors.white,)
+                  ],
+                ) : Container(),
+                Align( // price and addtocart
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: customText(label:"${products.listProduct[index].price} ₺", fontWeight: FontWeight.bold, fontSize: 20,),
+                      ),
+                      Container( // spring button
+                        margin: EdgeInsets.only(right:10),
+                        child: SpringButton(
+                          SpringButtonType.OnlyScale,
+                          basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1)).id==-1 ? 
+                          Icon(
+                            Icons.add_shopping_cart,
+                          ):
+                          Icon(Icons.remove_shopping_cart),
+                          onTap: () {
+                            var a = basketBloc.productList.firstWhere((e) => e.id==products.listProduct[index].id, orElse: () => Product(id: -1));
+                            if(a.id==-1){
+                              setState(() {
+                                basketBloc.dispatch(AddBasketEvent(product: products.listProduct[index]));
+                              });
+                              Toast.show("ADD TO BASKET", context, gravity: Toast.CENTER);
+                            }
+                            else {
+                              setState(() {
+                                basketBloc.dispatch(ExtractBasketEvent(product: products.listProduct[index]));
+                              });
+                              Toast.show("EXTRACT TO BASKET", context, gravity: Toast.CENTER);
+                            }
+                          },
+                          useCache : false,
+                          alignment : Alignment.center,
+                          scaleCoefficient : 0.1,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
